@@ -154,11 +154,12 @@ app.post('/auth', async (req, res)=> {
                 //res.send('Incorrect Username and/or Password!');				
 			} else {         
 				//creamos una var de session y le asignamos true si INICIO SESSION    
-				if(results[0].rol == 'usuario'){
+				
 				req.session.loggedin = true;                
 				req.session.name = results[0].user;
 				req.session.rol = results[0].rol; 	
 				req.session.id_users = results[0].id;
+				if(results[0].rol == 'usuario'){
 				res.render('login', {
 					alert: true,
 					alertTitle: "Conexión exitosa",
@@ -170,10 +171,6 @@ app.post('/auth', async (req, res)=> {
 					});
 				}
 				else if(results[0].rol == 'admin'){
-					req.session.loggedin = true;                
-					req.session.name = results[0].user;
-					req.session.rol = results[0].rol;
-					req.session.id_users = results[0].id;
 					res.render('login', {
 						alert: true,
 						alertTitle: "Conexión exitosa",
@@ -185,10 +182,6 @@ app.post('/auth', async (req, res)=> {
 						});
 					}
 				else{
-					req.session.loggedin = true;                
-					req.session.name = results[0].user;
-					req.session.rol = results[0].rol;
-					req.session.id_users = results[0].id;
 					res.render('login', {
 						alert: true,
 						alertTitle: "Conexión exitosa",
@@ -203,7 +196,7 @@ app.post('/auth', async (req, res)=> {
 			res.end();
 		});
 	} else {	
-		res.send('Porfavor ingrese un nombe y una contraseña!');
+		res.send('Porfavor ingrese un nombre y una contraseña!');
 		res.end();
 	}
 });

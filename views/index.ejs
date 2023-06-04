@@ -33,6 +33,7 @@
           <tbody>
             <% results.forEach((user)=>{ %>
               <tr>  
+                  <% if(user.rol == "admin"){%>
                   <td><%= user.id %></td>  
                   <td><%= user.user %></td>
                   <td><%= user.rol %></td>
@@ -44,9 +45,60 @@
                       <a href="/delete/<%= user.id %>" class="btn btn-outline-danger"><i class='bx bxs-trash-alt'></i></a>
                     <% } %>                   
                   </td>
-
-              </tr>                                   
+                  <% }%>
+              </tr>     
+                                            
             <% }) %>
+          </tbody>
+          <tbody>
+            <tr class="text-white" style="background-color: #6f42c1;">
+              <th scope="col">ID</th>
+              <th scope="col">USUARIO</th>
+              <th scope="col">ROL</th>            
+              <th scope="col">ACCIONES</th>
+              <% results.forEach((user)=>{ %>
+              <tr>
+                <% if(user.rol == "usuario"){%>
+                <td><%= user.id %></td>  
+                <td><%= user.user %></td>
+                <td><%= user.rol %></td>
+                
+                <!--verificar rol -->
+                <td>
+                  <% if(rol == "admin"){ %>
+                    <a href="/edit/<%= user.id %>" class="btn btn-outline-info"><i class='bx bxs-edit'></i></a>
+                    <a href="/delete/<%= user.id %>" class="btn btn-outline-danger"><i class='bx bxs-trash-alt'></i></a>
+                  <% } %>
+                </td>
+                <% }%>
+              <% }) %>
+              </tr>       
+            </tr>
+          </tbody>
+          <tbody>
+            <tr class="text-white" style="background-color: #6f42c1;">
+              <th scope="col">ID</th>
+              <th scope="col">USUARIO</th>
+              <th scope="col">ROL</th>            
+              <th scope="col">ACCIONES</th>
+              <% results.forEach((user)=>{ %>
+              <tr>
+                <% if(user.rol == "entrenador"){%>
+                <td><%= user.id %></td>  
+                <td><%= user.user %></td>
+                <td><%= user.rol %></td>
+                
+                <!--verificar rol -->
+                <td>
+                  <% if(rol == "admin"){ %>
+                    <a href="/edit/<%= user.id %>" class="btn btn-outline-info"><i class='bx bxs-edit'></i></a>
+                    <a href="/delete/<%= user.id %>" class="btn btn-outline-danger"><i class='bx bxs-trash-alt'></i></a>
+                  <% } %>
+                </td>
+                <% }%>
+              <% }) %>
+              </tr>       
+            </tr>
           </tbody>
         </table>
         <% if(rol == "admin"){ %>
