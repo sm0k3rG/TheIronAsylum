@@ -48,6 +48,12 @@ app.get('/login',(req, res)=>{
 app.get('/register',(req, res)=>{
 	res.render('register');
 })
+app.get('/usuario',(req, res)=>{
+	res.render('usuario');
+})
+app.get('/entrenador',(req, res)=>{
+	res.render('entrenador');
+})
 
 app.get('/', (req, res)=> {
 	if (req.session.loggedin) {
@@ -104,14 +110,15 @@ app.post('/register', async (req, res)=>{
     const rol = req.body.rol;
 	const pass = req.body.pass;
 	let passwordHash = await bcrypt.hash(pass, 8);
-    connection.query('INSERT INTO users SET ?',{user:user, name:name, rol:rol, pass:passwordHash}, async (error, results)=>{
+    connection.query('INSERT INTO users SET ?',{user:user, name:name, rol:rol, pass:passwordHash},
+	 async (error, results)=>{
         if(error){
             console.log(error);
         }else{            
 			res.render('register', {
 				alert: true,
-				alertTitle: "Registration",
-				alertMessage: "¡Successful Registration!",
+				alertTitle: "Registrarse",
+				alertMessage: "¡Se registro exitosamente!",
 				alertIcon:'success',
 				showConfirmButton: false,
 				timer: 1500,
@@ -146,10 +153,11 @@ app.post('/auth', async (req, res)=> {
 				//Mensaje simple y poco vistoso
                 //res.send('Incorrect Username and/or Password!');				
 			} else {         
-				//creamos una var de session y le asignamos true si INICIO SESSION       
+				//creamos una var de session y le asignamos true si INICIO SESSION    
+				if(results[0].rol == 'usuario'){
 				req.session.loggedin = true;                
 				req.session.name = results[0].user;
-				req.session.rol = results[0].rol;
+				req.session.rol = results[0].rol; 	
 				req.session.id_users = results[0].id;
 				res.render('login', {
 					alert: true,
@@ -158,13 +166,44 @@ app.post('/auth', async (req, res)=> {
 					alertIcon:'success',
 					showConfirmButton: false,
 					timer: 1500,
-					ruta: ''
-				});        			
-			}			
+					ruta: 'usuario'
+					});
+				}
+				else if(results[0].rol == 'admin'){
+					req.session.loggedin = true;                
+					req.session.name = results[0].user;
+					req.session.rol = results[0].rol;
+					req.session.id_users = results[0].id;
+					res.render('login', {
+						alert: true,
+						alertTitle: "Conexión exitosa",
+						alertMessage: "¡LOGIN CORRECTO!",
+						alertIcon:'success',
+						showConfirmButton: false,
+						timer: 1500,
+						ruta: ''
+						});
+					}
+				else{
+					req.session.loggedin = true;                
+					req.session.name = results[0].user;
+					req.session.rol = results[0].rol;
+					req.session.id_users = results[0].id;
+					res.render('login', {
+						alert: true,
+						alertTitle: "Conexión exitosa",
+						alertMessage: "¡LOGIN CORRECTO!",
+						alertIcon:'success',
+						showConfirmButton: false,
+						timer: 1500,
+						ruta: 'entrenador'
+						});
+				}
+			};	
 			res.end();
 		});
 	} else {	
-		res.send('Please enter user and Password!');
+		res.send('Porfavor ingrese un nombe y una contraseña!');
 		res.end();
 	}
 });
@@ -172,7 +211,7 @@ app.post('/auth', async (req, res)=> {
 app.post('/update', async (req, res)=> {
 	const user = req.body.user;
 	const rol = req.body.rol;
-	const id = req.body.id;    
+	const id = req.body.id;   
 
 	connection.query('UPDATE users SET user = ?, rol=? WHERE id = ?', [user,rol,id], async (error, filas)=> {
 			if(error){
@@ -183,8 +222,8 @@ app.post('/update', async (req, res)=> {
 					name: req.session.name,
 					rol: req.session.rol,
 					alert: true,
-					alertTitle: "UPDATE",
-					alertMessage: "¡Successful update!",
+					alertTitle: "Actualizado",
+					alertMessage: "¡Actualización correcta!",
 					alertIcon:'success',
 					showConfirmButton: false,
 					timer: 1500,

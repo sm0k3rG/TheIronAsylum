@@ -10,12 +10,10 @@
 <body>
     <nav class="navbar navbar-dark" style="background-color: #6f42c1;">
     <li class="nav-item">
-      <span class="navbar-brand mb-0 h1">Bienvenido <strong> <%= name %> </strong></span>
-    </li> 
-    <li class="nav-item">
-      <a class="navbar-brand" aria-current="page" href="/logout">Cerrar sesión</a>
-    </li> 
+      <span class="navbar-brand mb-0 h1">Editor: <strong> <%= name %> </strong></span>
+    </li>  
   </nav>
+  <% if (user) { %>
       <div class="container mt-4">          
           <div class="card border-secondary">  
                 <div class="card-header">Editar Registro</div>
@@ -31,7 +29,8 @@
                           <label for="rol" class="form-label">Rol</label>
                           <select id="rol" name="rol" class="form-select" tabindex="2">
                             <option <%= user.rol=='admin' ? "selected" : '' %> value="admin">Admin</option>
-                            <option <%= user.rol=='data entry' ? "selected" : '' %> value="dataentry">Data entry</option>                            
+                            <option <%= user.rol=='usuario' ? "selected" : '' %> value="usuario">Usuario</option>           
+                            <option <%= user.rol=='entrenador' ? "selected" : '' %> value="entrenador">Entrenador</option>                            
                           </select>
                         </div>                                                              
                         <button type="submit" class="btn btn-success" tabindex="5">Guardar</button>
@@ -40,6 +39,7 @@
                 </div>
             </div>     
       </div>
+      <% } %>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
 
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
