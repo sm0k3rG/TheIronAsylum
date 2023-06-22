@@ -11,20 +11,16 @@
     <div class="register-form">
 		<h1>Registrar nuevo usuario</h1>
 		<form action="/register" method="POST">
-            <label for="Nombre">Nombre de usuario</label>
-                <input type="text" name="user" required tabindex="1" autofocus>
-            <label for="apellidoPaterno">Apellido Paterno</label>
-                <input type="text" name="apellidoPaterno" required tabindex="1" autofocus>
-            <label for="apellidoMaterno">Apellido Materno</label>
-                <input type="text" name="apellidoMaterno" required tabindex="1" autofocus>           
+            <label for="user">Nombre de usuario</label>
+                <input type="text" name="user" required tabindex="1" autofocus>           
             <label for="email">Correo electrónico</label>
-                <input type="text" name="name" required tabindex="2">
+                <input type="text" name="email" required tabindex="2">
             <label for="edad">Edad</label>
             <br>
                 <input type="number" step="1" name="edad" min="1" max="100" required tabindex="1" autofocus>
                 <br>
-            <label for="user">estado</label>
-                <input type="text" pattern="[01]" name="valor" placeholder="Ingresar 0 si esta inactivo o 1 si esta activo">
+            <label for="estado">estado</label>
+                <input type="text" pattern="[01]" name="estado" placeholder="Ingresar 0 si esta inactivo o 1 si esta activo">
             
             <label for="rol">Rol</label>                          
             <select id="rol" name="rol" class="select-css" tabindex="3">

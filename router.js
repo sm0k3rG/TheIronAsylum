@@ -28,6 +28,18 @@ router.get('/edit/:id', (req,res)=>{
     });
 });
 
+router.get('/tarjeta/:id', (req,res)=>{    
+    const id = req.params.id;
+    connection.query('SELECT * FROM users WHERE id=?',[id] , (error, results) => {
+        if (error) {
+            throw error;
+        }else{            
+            res.render('tarjeta', {user:results[0]});
+                        
+        }        
+    });
+});
+
 router.get('/delete/:id', (req, res) => {
     const id = req.params.id;
     connection.query('DELETE FROM users WHERE id = ?',[id], (error, results)=>{
@@ -38,5 +50,16 @@ router.get('/delete/:id', (req, res) => {
         }
     })
 });
-
+app.get('/imc/:id', (req,res)=>{    
+    const id = req.params.id;
+    connection.query('SELECT * FROM users WHERE id=?',[id] , (error, results) => {
+        if (error) {
+            throw error;
+        }else{            
+            res.render('imc', {
+				user:results[0],
+				name: req.session.name});            
+        }        
+    });
+});
 module.exports = router;

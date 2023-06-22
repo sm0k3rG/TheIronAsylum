@@ -91,6 +91,33 @@ app.get('/edit/:id', (req,res)=>{
         }        
     });
 });
+app.get('/imc/:id', (req,res)=>{    
+    const id = req.params.id;
+    connection.query('SELECT * FROM users WHERE id=?',[id] , (error, results) => {
+        if (error) {
+            throw error;
+        }else{            
+            res.render('imc', {
+				user:results[0],
+				name: req.session.name});            
+        }        
+    });
+});
+app.get('/tarjeta/:id', (req,res)=>{    
+    const id = req.params.id;
+    connection.query('SELECT * FROM tarjetas WHERE idAsignado=?',[id] , (error, results) => {
+        if (error) {
+            throw error;
+        }else{    
+			console.log(id);        
+            res.render('tarjeta', {
+				tarjeta: results[0],
+				name: req.session.name,
+				id: id,
+			});            
+        }        
+    });
+});
 
 app.get('/delete/:id', (req, res) => {
     const id = req.params.id;
@@ -103,14 +130,29 @@ app.get('/delete/:id', (req, res) => {
     })
 });
 
+app.get('/agregarhora', (req, res) => {
+	var datee = new Date();
+	const entrada = req.query.parametro;
+	const hora = datee.getHours()+":"+datee.getMinutes();
+	const fecha = datee.getFullYear()+"/"+datee.getMonth()+"/"+datee.getDate()
+	connection.query('INSERT INTO asistencia (fecha, hora, tipo) VALUES (?, ?, ?)', [fecha, hora, entrada], (error, results) => {
+		if (error) {
+		  console.log(error);
+		} 
+	});
+});
+
+
 //10 - Método para el registro
 app.post('/register', async (req, res)=>{
 	const user = req.body.user;
-	const name = req.body.name;
     const rol = req.body.rol;
+	const name = req.body.email;
+	const edad = req.body.edad;
+	const estado = req.body.estado;
 	const pass = req.body.pass;
 	let passwordHash = await bcrypt.hash(pass, 8);
-    connection.query('INSERT INTO users SET ?',{user:user, name:name, rol:rol, pass:passwordHash},
+    connection.query('INSERT INTO users SET ?',{user:user, name:name, rol:rol, pass:passwordHash,estado:estado,edad:edad},
 	 async (error, results)=>{
         if(error){
             console.log(error);
@@ -227,7 +269,95 @@ app.post('/update', async (req, res)=> {
 	});
 	
 });
+app.post('/agregarTarjeta', async (req, res)=> {
+	const user = req.body.user;
+	const rol = req.body.rol;
+	const id = req.body.id;
+	const numeroTarjeta = req.body.numero;
+	const codigoSecreto = req.body.secreto;
+	const fechaVencimiento = req.body.fecha;
+	const estado = req.body.fecha;
+	connection.query('SELECT idAsignado FROM tarjetas WHERE idAsignado = ?',[id],async(error,resultado)=>{
+		if(error){
+            console.log(error);
+		}
+		else{
+			if(resultado.length > 0 && resultado[0].idAsignado != 0 ){
+				connection.query('UPDATE tarjetas SET numeroTarjeta = ?, codigoSecreto = ? , fechaVencimiento = ?,estado = ? WHERE idAsignado = ? ', [numeroTarjeta,codigoSecreto,fechaVencimiento,estado,id], async (error, filas)=> {
+					if(error){
+						throw error;
+					}else{
+						res.render('edit', {
+							user: req.body.user,
+							name: req.session.name,
+							rol: req.session.rol,
+							alert: true,
+							alertTitle: "Actualizado",
+							alertMessage: "¡Actualización correcta!",
+							alertIcon:'success',
+							showConfirmButton: false,
+							timer: 1500,
+							ruta: ''
+						});
+					}
+			});
+			}else{
+				connection.query('INSERT INTO tarjetas SET ?',{numeroTarjeta:numeroTarjeta, codigoSecreto:codigoSecreto,fechaVencimiento:fechaVencimiento, estado:estado, idAsignado:id},
+				async (error, results)=>{
+				   if(error){
+					   console.log(error);
+				   }else{            
+					   res.render('tarjeta', {
+						   user: req.body.user,
+							   name: req.session.name,
+							   rol: req.session.rol,
+						   alert: true,
+						   alertTitle: "Registrarse",
+						   alertMessage: "¡Se registro exitosamente!",
+						   alertIcon:'success',
+						   showConfirmButton: false,
+						   timer: 1500,
+						   ruta: ''
+					   });
+				   }
+			   });
+			}
+		}
+	})
+});
 
+app.post('/agregarIMC', async (req, res)=> {
+	const user = req.body.user;
+	const rol = req.body.rol;
+	const id = req.body.id;
+	const peso = req.body.peso;
+	const altura = req.body.altura;
+	const IMC = req.body.imc;
+	const nivel = req.body.nivel;
+	const sexo = req.body.sexo;
+
+	connection.query('INSERT INTO clientes SET ?',{peso:peso,altura:altura,IMC:IMC,nivel:nivel,sexo:sexo,idAsignado:id},
+	 async (error, results)=>{
+        if(error){
+            console.log(error);
+        }else{            
+			res.render('imc', {
+				user: req.body.user,
+					name: req.session.name,
+					rol: req.session.rol,
+				alert: true,
+				alertTitle: "Registrarse",
+				alertMessage: "¡Se registro exitosamente!",
+				alertIcon:'success',
+				showConfirmButton: false,
+				timer: 1500,
+				ruta: ''
+			});
+            //res.redirect('/');         
+        }
+	});
+	
+});
 //función para limpiar la caché luego del logout
 app.use(function(req, res, next) {
     if (!req.user)

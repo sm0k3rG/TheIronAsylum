@@ -110,9 +110,20 @@
     color: #797e8e;
     margin: 0 20px;
 }
+
+.red-button {
+    background-color: red;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 5px;
+}
 /* *********** */
 /* SECCION NOSOTROS */
 /* *********** */
+
 .nosotros{
     max-width: 1100px;
     margin: auto;
@@ -120,6 +131,7 @@
     background-color: #dde1e9;
     padding: 100px 20px;
 }
+
 .nosotros .fila{
     display: flex;
     align-items: center;
@@ -491,7 +503,9 @@
     width: 100%;
     height: 200px;
 }
-
+#enlace {
+    font-size: 30px;
+  }
 .contacto button{
     display: block;
     width: fit-content;
@@ -618,24 +632,5 @@ footer .info a{
         max-width: 250px;
         margin: auto;
     }
-    .contacto .fila{
-        display: block;
-    }
-    .contacto .fila .col{
-        width: 100%;
-        margin-bottom: 20px;
-    }
-    .contacto .fila-datos{
-        display: block;
-    }
-    .contacto .fila-datos .col{
-        margin-bottom: 20px;
-    }
-    footer .info{
-        display: block;
-        text-align: center;
-    }
-    footer .info p{
-        margin-bottom: 10px;
-    }
+
 }
