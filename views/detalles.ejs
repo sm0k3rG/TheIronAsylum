@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link href="styles.css" rel="stylesheet">
+    <title>Planes de ejercicio</title>
+</head>
+<body>
+    <nav class="navbar navbar-dark" style="background-color: #6f42c1;">
+    <li class="nav-item">
+        <span class="navbar-brand mb-0 h1">Editor: <strong>planes </strong></span>
+    </li>  
+    </nav>
+    <div class="container mt-4">          
+        <div class="card border-secondary">  
+                <div class="card-header">Editar Registro</div>
+                <div class="card-body">
+                <div class="register-form">
+                <h1>Agregue detalles al plan de ejercicio</h1>
+                <form action="/agregardetalle" method="POST">
+                    <input id="id" name="id" value="<%= detalleid %>">
+                    <label for="descripcion">Detalle del plan de ejercicio</label>
+                        <textarea id="detalle" name="detalle" rows="4" cols="51" style="resize: none;" oninput="limitarLineas(this, 4)"></textarea>
+                            <script>
+                                function limitarLineas(textarea, maxLineas) {
+                                var lineas = textarea.value.split('\n');
+                                if (lineas.length > maxLineas) {
+                                    textarea.value = lineas.slice(0, maxLineas).join('\n');
+                                }
+                                }
+                                </script>
+                            <br>
+                        <div style="display: inline;">   
+                            <button type="submit" class="btn btn-success" tabindex="5">Guardar</button>          
+                            <a href="/" class="btn btn-secondary">Cancelar</a>           
+                        </div>
+                </form>
+            </div>
+        </div>		
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+  </div>
+</body>
+</html>

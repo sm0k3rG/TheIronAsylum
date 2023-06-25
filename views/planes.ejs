@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="resources/css/style.css">
+    <title>Planes de ejercicio</title>
+</head>
+<body>
+    <div class="register-form">
+		<h1>Agregar nuevo plan de ejercicio</h1>
+		<form action="/agregarplan" method="POST">
+            <label for="plan">Nombre del plan de ejercicio</label>
+                <input type="text" name="plan" required tabindex="1" autofocus>
+            <br></br>
+            <label for="nivel">Nivel de dificultad</label>                          
+            <select id="nivel" name="nivel" class="select-css" tabindex="3">
+                <option value="basico" selected>Básico</option>
+                <option value="intermedio">Intermedio</option> 
+                <option value="avanzado">Avanzado</option>    
+            </select>          
+            <br></br>
+            <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" name="descripcion" rows="4" cols="51" style="resize: none;" oninput="limitarLineas(this, 4)"></textarea>
+                <script>
+                  function limitarLineas(textarea, maxLineas) {
+                    var lineas = textarea.value.split('\n');
+                    if (lineas.length > maxLineas) {
+                      textarea.value = lineas.slice(0, maxLineas).join('\n');
+                    }
+                  }
+                  </script>
+             <br>
+            <div style="display: inline;">             
+                <a href="/" class="btn-cancel">Cancelar</a><input type="submit" class="btn-save" value="Guardar">           
+            </div>
+		</form>		
+	</div>
+
+    		
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+  </div>
+</body>
+</html>

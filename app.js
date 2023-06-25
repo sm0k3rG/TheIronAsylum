@@ -51,33 +51,49 @@ app.get('/register',(req, res)=>{
 app.get('/usuario',(req, res)=>{
 	res.render('usuario');
 })
+app.get('/planes',(req, res)=>{
+	res.render('planes');
+})
 app.get('/entrenador',(req, res)=>{
 	res.render('entrenador');
 })
-
-app.get('/', (req, res)=> {
-	if (req.session.loggedin) {
-		connection.query('SELECT * FROM users WHERE id != ?', [req.session.id_users],(error, results)=>{
-			if(error){
-				throw error;
-			} else {      
-				res.render('index', {
-					results:results,
-					login: true,
-					name: req.session.name,
-					rol: req.session.rol,
-					id: req.session.id_users
-				});            
-			}   
-		})
-
-	}else{
-		res.render('index', {
-			login: false,
-			name: 'sesión caducada'
-		})
-	}
+app.get('/detalles',(req, res)=>{
+	res.render('detalles');
 })
+
+app.get('/', (req, res) => {
+	if (req.session.loggedin) {
+		connection.query('SELECT * FROM users WHERE id != ?', [req.session.id_users], (error, userResults) => {
+		if (error) {
+			throw error;
+		} else {
+			connection.query('SELECT * FROM plan', (error, planResults) => {
+			if (error) {
+				throw error;
+			} else {
+				res.render('index', {
+				results: userResults,
+				login: true,
+				name: req.session.name,
+				rol: req.session.rol,
+				id: req.session.id_users,
+				resultado: planResults,
+				idPlan: req.session.idPlan,
+				plan: req.session.plan,
+				nivel: req.session.nivel,
+				descripcion: req.session.descripcion
+				});
+			}
+			});
+		}
+		});
+	} else {
+		res.render('index', {
+		login: false,
+		name: 'sesión caducada'
+		});
+	}
+});
 
 app.get('/edit/:id', (req,res)=>{    
     const id = req.params.id;
@@ -103,22 +119,38 @@ app.get('/imc/:id', (req,res)=>{
         }        
     });
 });
+
 app.get('/tarjeta/:id', (req,res)=>{    
     const id = req.params.id;
     connection.query('SELECT * FROM tarjetas WHERE idAsignado=?',[id] , (error, results) => {
         if (error) {
             throw error;
-        }else{    
-			console.log(id);        
+        }else{
+			    
             res.render('tarjeta', {
-				tarjeta: results[0],
-				name: req.session.name,
-				id: id,
+			tarjeta: results[0],
+			name: req.session.name,
+			id: id,
 			});            
-        }        
+        };        
     });
 });
 
+app.get('/detalles/:id', (req,res)=>{    
+    const id = req.params.id;
+	console.log("entro al get")
+	console.log(id)
+    connection.query('SELECT * FROM detalle_plan WHERE plan_id=?',[id] , (error, results) => {
+        if (error) {
+            throw error;
+        }else{
+            res.render('detalles', { 
+				results: results,
+				detalleid: id            
+        	});        
+    	};
+	});
+});
 app.get('/delete/:id', (req, res) => {
     const id = req.params.id;
     connection.query('DELETE FROM users WHERE id = ?',[id], (error, results)=>{
@@ -134,14 +166,20 @@ app.get('/agregarhora', (req, res) => {
 	var datee = new Date();
 	const entrada = req.query.parametro;
 	const hora = datee.getHours()+":"+datee.getMinutes();
-	const fecha = datee.getFullYear()+"/"+datee.getMonth()+"/"+datee.getDate()
+	const fecha = datee.getFullYear()+"/"+(1+datee.getMonth())+"/"+datee.getDate()
+
 	connection.query('INSERT INTO asistencia (fecha, hora, tipo) VALUES (?, ?, ?)', [fecha, hora, entrada], (error, results) => {
 		if (error) {
 		  console.log(error);
-		} 
+		} else{
+            res.render('usuario', { fecha: fecha, hora: hora, tipo: entrada });         
+        }
 	});
 });
 
+app.post('/usuario', async (req, res)=>{
+	
+})
 
 //10 - Método para el registro
 app.post('/register', async (req, res)=>{
@@ -171,12 +209,37 @@ app.post('/register', async (req, res)=>{
 	});
 })
 
+app.post('/agregarplan', async (req, res) => {
+	const plan = req.body.plan;
+	const nivel = req.body.nivel;
+	const descripcion = req.body.descripcion;
+  
+	connection.query('INSERT INTO plan SET ?', { plan: plan, nivel: nivel, descripcion: descripcion }, async (error, resultado) => {
+	  if (error) {
+		console.log(error);
+		// Manejar el error aquí
+	  } else {
+			res.render('register', {
+			  alert: true,
+			  alertTitle: "Registrarse",
+			  alertMessage: "¡Se agregó el plan exitosamente!",
+			  alertIcon: 'success',
+			  showConfirmButton: false,
+			  timer: 1500,
+			  ruta: '',
+			});
+		  }
+	});
+});
 
+  
 
 //11 - Metodo para la autenticacion
 app.post('/auth', async (req, res)=> {
 	const user = req.body.user;
-	const pass = req.body.pass;    
+	const pass = req.body.pass;
+	const estado = req.body.estado;
+	
     let passwordHash = await bcrypt.hash(pass, 8);
 
 	if (user && pass) {
@@ -196,20 +259,20 @@ app.post('/auth', async (req, res)=> {
                 //res.send('Incorrect Username and/or Password!');				
 			} else {         
 				//creamos una var de session y le asignamos true si INICIO SESSION    
-				
 				req.session.loggedin = true;                
 				req.session.name = results[0].user;
 				req.session.rol = results[0].rol; 	
 				req.session.id_users = results[0].id;
-				if(results[0].rol == 'usuario'){
-				res.render('login', {
-					alert: true,
-					alertTitle: "Conexión exitosa",
-					alertMessage: "¡LOGIN CORRECTO!",
-					alertIcon:'success',
-					showConfirmButton: false,
-					timer: 1500,
-					ruta: 'usuario'
+				
+				if(results[0].estado == 0){
+					res.render('login', {
+                        alert: true,
+                        alertTitle: "Error",
+                        alertMessage: "Usuario desactivado",
+                        alertIcon:'error',
+                        showConfirmButton: true,
+                        timer: false,
+                        ruta: 'login'  
 					});
 				}
 				else if(results[0].rol == 'admin'){
@@ -223,6 +286,17 @@ app.post('/auth', async (req, res)=> {
 						ruta: ''
 						});
 					}
+				else if(results[0].rol == 'usuario'){
+					res.render('login', {
+						alert: true,
+						alertTitle: "Conexión exitosa",
+						alertMessage: "¡LOGIN CORRECTO!",
+						alertIcon:'success',
+						showConfirmButton: false,
+						timer: 1500,
+						ruta: 'usuario'
+                    });
+				}
 				else{
 					res.render('login', {
 						alert: true,
@@ -269,14 +343,73 @@ app.post('/update', async (req, res)=> {
 	});
 	
 });
+
+app.post('/agregardetalle', async (req, res)=> {
+	//const user = req.body.user;
+	//const rol = req.body.rol;
+	const id = req.body.id;
+	const detalle = req.body.detalle;
+	console.log("entro al post")
+	console.log(req.body.id)
+
+
+	connection.query('SELECT plan_id FROM detalle_plan WHERE plan_id = ?',[id],async(error,resultado)=>{
+		if(error){
+            console.log(error);
+		}
+		else{
+			if(resultado.length > 0 && resultado[0].plan_id != 0 ){
+				connection.query('UPDATE detalle_plan SET detalle = ? WHERE plan_id = ? ', [detalle,id], async (error, filas)=> {
+					if(error){
+						throw error;
+					}else{
+						res.render('edit', {
+							user: req.body.user,
+							name: req.session.name,
+							rol: req.session.rol,
+							alert: true,
+							alertTitle: "Actualizado",
+							alertMessage: "¡Actualización correcta!",
+							alertIcon:'success',
+							showConfirmButton: false,
+							timer: 1500,
+							ruta: ''
+						});
+					}
+			});
+			}else{
+				connection.query('INSERT INTO detalle_plan SET ?',{detalle:detalle, plan_id:id},
+				async (error, results)=>{
+				   if(error){
+					   console.log(error);
+				   }else{            
+					   res.render('detalles', {
+						 //  user: req.body.user,
+							name: req.session.name,
+							rol: req.session.rol,
+							alert: true,
+							alertTitle: "Registrarse",
+							alertMessage: "¡Se registro exitosamente!",
+							alertIcon:'success',
+							showConfirmButton: false,
+							timer: 1500,
+							ruta: ''
+					   });
+				   }
+			   });
+			}
+		}
+	})
+});
+
 app.post('/agregarTarjeta', async (req, res)=> {
-	const user = req.body.user;
-	const rol = req.body.rol;
+	//const user = req.body.user;
+	//const rol = req.body.rol;
 	const id = req.body.id;
 	const numeroTarjeta = req.body.numero;
 	const codigoSecreto = req.body.secreto;
 	const fechaVencimiento = req.body.fecha;
-	const estado = req.body.fecha;
+	const estado = req.body.estado;
 	connection.query('SELECT idAsignado FROM tarjetas WHERE idAsignado = ?',[id],async(error,resultado)=>{
 		if(error){
             console.log(error);
@@ -308,7 +441,7 @@ app.post('/agregarTarjeta', async (req, res)=> {
 					   console.log(error);
 				   }else{            
 					   res.render('tarjeta', {
-						   user: req.body.user,
+						 //  user: req.body.user,
 							   name: req.session.name,
 							   rol: req.session.rol,
 						   alert: true,
@@ -358,6 +491,9 @@ app.post('/agregarIMC', async (req, res)=> {
 	});
 	
 });
+
+
+
 //función para limpiar la caché luego del logout
 app.use(function(req, res, next) {
     if (!req.user)

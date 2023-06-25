@@ -29,16 +29,19 @@
             <tr class="text-white" style="background-color: #6f42c1;">
               <th scope="col">ID</th>
               <th scope="col">USUARIO</th>
-              <th scope="col">ROL</th>            
+              <th scope="col">ROL</th> 
+              <th scope="col">ESTADO</th>           
               <th scope="col">ACCIONES</th>            
             </tr>
           </thead>
           <tbody>
             <% results.forEach((user)=>{ %>
+              
               <tr>  
                   <td><%= user.id %></td>  
                   <td><%= user.user %></td>
                   <td><%= user.rol %></td>
+                  <td><%= user.estado %></td>
                   
                   <!--verificar rol -->
                   <td>
@@ -57,8 +60,39 @@
           </tbody>
         </table>
         <button type="button" onclick="location.href='register'" class="btn btn-outline-success" style="float: right;" >Agregar nuevo usuario</button>
+        <button type="button" onclick="location.href='planes'" class="btn btn-outline-success" style="float: right;" >Vista Planes</button>
         </div>
-        <a href="/agregarhora?parametro=salida" class="btn btn-outline-danger"><i class='bx bxs-trash-alt'></i></a>
+        <br>
+        <div  class="container">  
+          <table id="tabla2" class="table table-bordered table-striped text-center mt-4">
+            <thead>
+              <tr class="text-white" style="background-color: #6f42c1;">
+                <th scope="col">ID</th>
+                <th scope="col">Nombre del plan</th>
+                <th scope="col">Nivel</th> 
+                <th scope="col">Descripción</th>           
+                <th scope="col">ACCIONES</th>            
+              </tr>
+            </thead>
+            <tbody>
+              <% resultado.forEach((plan)=>{ %>
+              
+                <tr>  
+                    <td><%= plan.idPlan %></td>  
+                    <td><%= plan.plan %></td>
+                    <td><%= plan.nivel %></td>
+                    <td><%= plan.descripcion %></td>
+                    
+                    <!--verificar rol -->
+                    <td>
+
+                      <a href="/detalles/<%= plan.idPlan %>" class="btn btn-outline-danger"><i class='bx bx-add-to-queue'></i></a>          
+                    </td>
+                </tr>    
+              <% })%> 
+            </tbody>
+          </table>
+        </div>
         <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
         <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>

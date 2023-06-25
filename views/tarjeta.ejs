@@ -12,14 +12,14 @@
     <li class="nav-item">
       <span class="navbar-brand mb-0 h1">Editor: <strong> <%= name %> </strong></span>
     </li>  
-  </nav>
+    </nav>
   
       <div class="container mt-4">          
           <div class="card border-secondary">  
                 <div class="card-header">Editar Registro</div>
                 <div class="card-body">
                     <form action="/agregarTarjeta" method="POST">
-                         <input id="id" name="id" value="<%= id  %>">
+                         <input id="id" name="id" value="<%= id %>">
                         <div class="mb-3">
                           <label for="user" class="form-label">Numero de Tarjeta</label>
                           <input type="text" class="form-control" id="numero" name="numero" tabindex="1" value="<%= tarjeta ? tarjeta.numeroTarjeta : '' %>">                        
